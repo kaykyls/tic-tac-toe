@@ -34,6 +34,10 @@ for(let i = 0; i < box.length; i++){
                 turn = "O"
                 displayX(i)
                 changeDisplayTurn(turn)
+                if(playedBoxes.length === 9){
+                    displayTurn.innerHTML = "Deu velha!"
+                    playAgainBTn.classList.remove("hidden")
+                }
             }
         }
 
@@ -54,6 +58,10 @@ for(let i = 0; i < box.length; i++){
                 turn = "X"
                 displayCircle(i)
                 changeDisplayTurn(turn)
+                if(playedBoxes.length === 9){
+                    displayTurn.innerHTML = "Deu velha!"
+                    playAgainBTn.classList.remove("hidden")
+                }
             }
         }
     })
@@ -136,4 +144,5 @@ playAgainBTn.addEventListener("click", () => {
     }
     displayTurn.innerHTML = `É a vez de: X`
     thereIsNoWin = true
+    turn = "X"
 })
