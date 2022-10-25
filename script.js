@@ -16,58 +16,43 @@ let oWins = 0
 displayTurn.innerHTML += `${turn}`
 
 for(let i = 0; i < box.length; i++){
+    handleClick(i)
+}
+
+function handleClick(i) {
     box[i].addEventListener("click", () => {
-        if(!playedBoxes.includes(i) && turn === "X"){
-            
+        if(!playedBoxes.includes(i)){
             boxesMoves[i] = turn
-            
             if(playerWon()) {
                 if(thereIsNoWin){
-                    displayX(i)
-                    displayWinText("X")
-                    xWins++
-                    xWinsScoreboard.innerText = `X: ${xWins}`
+                    updateDisplay(turn, i)
+                    displayWinText(turn)
+                    updateWinsDisplay(turn)
+                    displayPlayAgainButton()
                     thereIsNoWin = false
-                    playAgainBTn.classList.remove("hidden")
                 }
             } else {
-                turn = "O"
-                displayX(i)
-                changeDisplayTurn(turn)
+                updateDisplay(turn, i)
+                changeTurn()
+                updateTurnMessage(turn)
                 if(playedBoxes.length === 9){
                     displayTurn.innerHTML = "Deu velha!"
-                    playAgainBTn.classList.remove("hidden")
-                }
-            }
-        }
-
-        else if(!playedBoxes.includes(i) && turn === "O"){
-             
-            boxesMoves[i] = turn
-            
-            if(playerWon()){
-                if(thereIsNoWin){
-                    displayCircle(i)
-                    displayWinText("O")
-                    oWins++
-                    circleWinsScoreboard.innerText = `O: ${oWins}`
-                    thereIsNoWin = false
-                    playAgainBTn.classList.remove("hidden")
-                }
-            } else {
-                turn = "X"
-                displayCircle(i)
-                changeDisplayTurn(turn)
-                if(playedBoxes.length === 9){
-                    displayTurn.innerHTML = "Deu velha!"
-                    playAgainBTn.classList.remove("hidden")
+                    displayPlayAgainButton()
                 }
             }
         }
     })
 }
 
-function changeDisplayTurn(turn) {
+function changeTurn() {
+    if(turn === "X"){
+        turn = "O"
+    } else if(turn === "O"){
+        turn = "X"
+    }
+}
+
+function updateTurnMessage(turn) {
     displayTurn.innerHTML = `É a vez de: ${turn}`
 }
 
@@ -75,74 +60,64 @@ function displayWinText(turn) {
     displayTurn.innerHTML = `O jogador ${turn} ganhou!`
 }
 
-function displayCircle(i) {
-    if(playedBoxes.includes(i)){
-        return
-    }else{
+function updateDisplay(turn, i) {
+    if(turn === "X" && !playedBoxes.includes(i)){
+        x[i].classList.remove("hidden")
+        playedBoxes.push(i)
+    } else if(turn === "O" && !playedBoxes.includes(i)){
         circle[i].classList.remove("hidden")
         playedBoxes.push(i)
     }
 }
 
-function displayX(i) {
-    if(playedBoxes.includes(i)){
-        return
-    }else{
-        x[i].classList.remove("hidden")
-        playedBoxes.push(i)
+function updateWinsDisplay(turn) {
+    if(turn === "X"){
+        xWins++
+        xWinsScoreboard.innerText = `${turn}: ${xWins}`
+    } else if(turn === "O"){
+        oWins++
+        circleWinsScoreboard.innerText = `${turn}: ${oWins}`
     }
 }
 
-function winCondition(boxesMoves = [], num1, num2, num3) {
-    return boxesMoves[num1] === boxesMoves[num2] && boxesMoves[num2] === boxesMoves[num3] && boxesMoves[num1] !== undefined
+function displayPlayAgainButton() {
+    playAgainBTn.classList.remove("hidden")
+}
+
+const winSequences = {
+    hor1: [0, 1, 2],
+    hor2: [3, 4, 5],
+    hor3: [6, 7, 8],
+
+    ver1: [0, 3, 6],
+    ver2: [1, 4, 7],
+    ver3: [2, 5, 8],
+
+    diag1: [0, 4, 8],
+    diag2: [2, 4, 6]
 }
 
 function playerWon() {
-    //vertical
-    if(winCondition(boxesMoves, 0, 1, 2)){
-        return true
-    }
-
-    if(winCondition(boxesMoves, 3, 4, 5)){
-        return true
-    }
-    
-    if(winCondition(boxesMoves, 6, 7, 8)){
-        return true
-    }
-
-    //horizontal
-    if(winCondition(boxesMoves, 0, 3, 6)){
-        return true
-    }
-    
-    if(winCondition(boxesMoves, 1, 4, 7)){
-        return true
-    }
-    
-    if(winCondition(boxesMoves, 2, 5, 8)){
-        return true
-    }
-
-    //diagonal
-    if(winCondition(boxesMoves, 0, 4, 8)){
-        return true
-    }
-    
-    if(winCondition(boxesMoves, 2, 4, 6)){
-        return true
+    for(let sequence in winSequences) {
+        if(winCondition(boxesMoves, winSequences[sequence])) return true
     }
 }
 
-playAgainBTn.addEventListener("click", () => {
-    playAgainBTn.classList.add("hidden")
-    playedBoxes = []
-    boxesMoves = []
+function winCondition(boxesMoves = [], num = []) {
+    return boxesMoves[num[0]] === boxesMoves[num[1]] && boxesMoves[num[1]] === boxesMoves[num[2]] && boxesMoves[num[0]] !== undefined
+}
+
+function resetGame() {
     for(let i = 0; i < box.length; i++){
         circle[i].classList.add("hidden")
         x[i].classList.add("hidden")
     }
-    displayTurn.innerHTML = `É a vez de: X`
-    thereIsNoWin = true
+    playedBoxes = []
+    boxesMoves = []
+    playAgainBTn.classList.add("hidden")
     turn = "X"
-})
+    updateTurnMessage(turn)
+    thereIsNoWin = true
+}
+
+playAgainBTn.addEventListener("click", resetGame)
