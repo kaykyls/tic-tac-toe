@@ -23,7 +23,7 @@ function handleClick(i) {
     box[i].addEventListener("click", () => {
         if(!playedBoxes.includes(i)){
             boxesMoves[i] = turn
-            if(playerWon()) {
+            if(checkIfPlayerWon()) {
                 if(thereIsNoWin){
                     updateDisplay(turn, i)
                     displayWinText(turn)
@@ -97,7 +97,7 @@ const winSequences = {
     diag2: [2, 4, 6]
 }
 
-function playerWon() {
+function checkIfPlayerWon() {
     for(let sequence in winSequences) {
         if(winCondition(boxesMoves, winSequences[sequence])) return true
     }
