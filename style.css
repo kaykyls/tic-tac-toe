@@ -19,10 +19,10 @@ body {
 
 .wins, .turn {
     font-size: 1.3rem;
-    background: #bde1ff;
+    background: #4c5a66;
     border-radius: 16px;
     margin-bottom: 1rem;
-    color: #000;
+    color: #fff;
     padding: 20px 20px;
     width: 500px;
     text-align: center;
